@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <title>لعبة حجر ورقة مقص</title>
+    <style>
+        h1 {
+            text-align: center;
+        }
+
+        #game {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        button {
+            padding: 20px 40px;
+            font-size: 24px;
+            margin: 0 10px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+
+        .rock {
+            background-color: #ff3f3f;
+            color: white;
+        }
+
+        .paper {
+            background-color: #3f51b5;
+            color: white;
+        }
+
+        .scissors {
+            background-color: #4caf50;
+            color: white;
+        }
+
+        #result {
+            text-align: center;
+            font-size: 30px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        #coins {
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        #level {
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>لعبة حجر ورقة مقص</h1>
+    <div id="game">
+        <button class="rock" onclick="play('حجر')">حجر</button>
+        <button class="paper" onclick="play('ورقة')">ورقة</button>
+        <button class="scissors" onclick="play('مقص')">مقص</button>
+    </div>
+    <div id="result"></div>
+    <div id="coins">عدد العملات: 0</div>
+    <div id="level">المستوى: 1</div>
+
+    <script>
+        var choices = ['حجر', 'ورقة', 'مقص'];
+        var coins = 100;
+        var level = 0;
+
+        if (localStorage.getItem('coins') === null) {
+            localStorage.setItem('coins', coins);
+        } else {
+            coins = parseInt(localStorage.getItem('coins'));
+        }
+
+        if (localStorage.getItem('level') === null) {
+            localStorage.setItem('level', level);
+        } else {
+            level = parseInt(localStorage.getItem('level'));
+        }
+
+        updateCoinsDisplay();
+        updateLevelDisplay();
+
+        function play(userChoice) {
+            var computerChoice = getComputerChoice();
+            var result = getResult(userChoice, computerChoice);
+            updateCoins(result);
+            document.getElementById('result').innerHTML = result;
+        }
+
+        function getComputerChoice() {
+            var randomIndex = Math.floor(Math.random() * choices.length);
+            return choices[randomIndex];
+        }
+
+        function getResult(userChoice, computerChoice) {
+            if (userChoice === computerChoice) {
+                return 'تعادل!';
+            } else if (
+                (userChoice === 'حجر' && computerChoice === 'مقص') ||
+                (userChoice === 'ورقة' && computerChoice === 'حجر') ||
+                (userChoice === 'مقص' && computerChoice === 'ورقة')
+            ) {
+                level++;
+                localStorage.setItem('level', level);
+                updateLevelDisplay();
+                return 'فزت!';
+            } else {
+                level--;
+                localStorage.setItem('level', level);
+                updateLevelDisplay();
+                return 'خسرت!';
+            }
+        }
+
+        function updateCoins(result) {
+            if (result === 'فزت!') {
+                coins += 10;
+            } else if (result === 'خسرت!') {
+                coins -= 10;
+            }
+            localStorage.setItem('coins', coins);
+            updateCoinsDisplay();
+        }
+
+        function updateCoinsDisplay() {
+            document.getElementById('coins').innerHTML = 'عدد العملات: ' + coins;
+        }
+
+        function updateLevelDisplay() {
+            document.getElementById('level').innerHTML = 'المستوى: ' + level;
+        }
+    </script>
+</body>
+</html>
